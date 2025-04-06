@@ -6,19 +6,28 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Example;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static br.com.exemplo.swplanetaapi.common.PlanetConstants.INVALIDPLANET;
 import static br.com.exemplo.swplanetaapi.common.PlanetConstants.NAME;
 import static br.com.exemplo.swplanetaapi.common.PlanetConstants.PLANET;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.assertThat;
+
+
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -86,6 +95,29 @@ class PlanetServiceTest {
         Optional<Planet> planet = planetService.getByName(NAME);
 
         assertThat(planet).isEmpty();
+    }
+
+    @Test
+    public void listPlanest_ReturnAllPlanets(){
+        List<Planet> planets = new ArrayList<>();
+        planets.add(PLANET);
+
+        Example<Planet> query = QueryBuilder.makeQuery(new Planet(PLANET.getTerrain(),PLANET.getClimate()));
+
+        when(planetRepository.findAll(query)).thenReturn(planets);
+
+        List<Planet> result = planetService.list(PLANET.getTerrain(),PLANET.getClimate());
+
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    public void listPlanets_returnsNoPlanets(){
+        when(planetRepository.findAll((Example<Planet>) any())).thenReturn(Collections.emptyList());
+
+        List<Planet> result = planetService.list(PLANET.getTerrain(),PLANET.getClimate());
+        assertThat(result).isEmpty();
+
     }
 
 }

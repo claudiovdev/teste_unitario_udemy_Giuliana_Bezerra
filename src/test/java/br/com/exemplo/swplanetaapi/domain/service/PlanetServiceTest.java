@@ -23,6 +23,7 @@ import java.util.Optional;
 import static br.com.exemplo.swplanetaapi.common.PlanetConstants.INVALIDPLANET;
 import static br.com.exemplo.swplanetaapi.common.PlanetConstants.NAME;
 import static br.com.exemplo.swplanetaapi.common.PlanetConstants.PLANET;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -80,7 +82,7 @@ class PlanetServiceTest {
     }
     @Test
     public void getPlanet_ByExistingName_returnsPlanet(){
-        when(planetRepository.findByName(NAME)).thenReturn(Optional.of(PLANET));
+        when(planetRepository.findByNome(NAME)).thenReturn(Optional.of(PLANET));
 
         Optional<Planet> planet = planetService.getByName(NAME);
 
@@ -90,7 +92,7 @@ class PlanetServiceTest {
 
     @Test
     public void getPlanet_byUnexistingName_ReturnsEmpty(){
-        when(planetRepository.findByName(NAME)).thenReturn(Optional.empty());
+        when(planetRepository.findByNome(NAME)).thenReturn(Optional.empty());
 
         Optional<Planet> planet = planetService.getByName(NAME);
 
@@ -117,6 +119,18 @@ class PlanetServiceTest {
 
         List<Planet> result = planetService.list(PLANET.getTerrain(),PLANET.getClimate());
         assertThat(result).isEmpty();
+
+    }
+
+    @Test
+    public void removePlanet_WithexistingId_doesNotThrowAnyException(){
+        assertThatCode(()-> planetService.remove(1L)).doesNotThrowAnyException();
+    }
+
+    @Test
+    public void removePlanet_WithUnexistingId_ThrowsExcepion(){
+        doThrow(new RuntimeException()).when(planetRepository).deleteById(2L);
+        assertThrows(RuntimeException.class, () -> planetService.remove(2L));
 
     }
 

@@ -27,11 +27,15 @@ public class PlanetService {
     }
 
     public Optional<Planet> getByName(String nome) {
-        return planetRepository.findByName(nome);
+        return planetRepository.findByNome(nome);
     }
 
     public List<Planet> list(String terrain, String climate) {
         Example<Planet> query = QueryBuilder.makeQuery(new Planet(terrain,climate));
         return  planetRepository.findAll(query);
+    }
+
+    public void remove(Long id) {
+        planetRepository.deleteById(id);
     }
 }

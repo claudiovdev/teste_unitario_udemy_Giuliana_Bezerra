@@ -6,12 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.QueryByExampleExecutor;
 import org.springframework.stereotype.Repository;
 
+
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface PlanetRepository extends JpaRepository<Planet, Long> , QueryByExampleExecutor<Planet> {
-    Optional<Planet> findByName(String nome);
+    Optional<Planet> findByNome(String nome);
 
     @Override
     <S extends Planet> List<S> findAll(Example<S> exemple);
